@@ -22,7 +22,7 @@ async function requestGeminiApi(apiKey, messages) {
     model
   });
 
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   const contents = messages.map((message) => ({
     role: message.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: message.content }]
@@ -33,8 +33,8 @@ async function requestGeminiApi(apiKey, messages) {
       generationConfig: { temperature: 0.7 }
     }),
     headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey
     },
     method: 'POST'
   });
