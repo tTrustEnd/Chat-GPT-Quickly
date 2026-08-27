@@ -128,15 +128,46 @@
         const port = chrome.runtime.connect({ name: 'gemini-chat' });
         const assistantMessage = this.addAssistantMessage('');
         let reply = '';
+        let pendingText = '';
+        let streamFinished = false;
+        let isTyping = false;
+        let settled = false;
+
+        const typeNextCharacter = () => {
+          if (pendingText) {
+            assistantMessage.textContent += pendingText[0];
+            pendingText = pendingText.slice(1);
+            this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+            window.setTimeout(typeNextCharacter, 12);
+            return;
+          }
+          isTyping = false;
+          if (streamFinished && !settled) {
+            settled = true;
+            resolve(reply);
+          }
+        };
 
         port.onMessage.addListener((message) => {
           if (message.type === 'chunk') {
             reply += message.text;
-            assistantMessage.textContent = reply;
-            this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+            pendingText += message.text;
+            if (!isTyping) {
+              isTyping = true;
+              typeNextCharacter();
+            }
           }
-          if (message.type === 'done') resolve(reply);
-          if (message.type === 'error') reject(new Error(message.error));
+          if (message.type === 'done') {
+            streamFinished = true;
+            if (!isTyping && !settled) {
+              settled = true;
+              resolve(reply);
+            }
+          }
+          if (message.type === 'error' && !settled) {
+            settled = true;
+            reject(new Error(message.error));
+          }
         });
         port.onDisconnect.addListener(() => {
           if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
