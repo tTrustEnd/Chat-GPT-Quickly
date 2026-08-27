@@ -113,21 +113,36 @@
       console.log('[Chat GPT Quickly] Sending message', { messageCount: this.conversation.length });
 
       try {
-        const result = await chrome.runtime.sendMessage({
-          type: 'chat',
-          apiKey,
-          messages: this.conversation
-        });
-        console.log('[Chat GPT Quickly] Background response', result);
-        if (!result.ok) throw new Error(result.error);
-        this.conversation.push({ role: 'assistant', content: result.reply });
-        this.addAssistantMessage(result.reply);
+        const reply = await this.streamReply(apiKey);
+        this.conversation.push({ role: 'assistant', content: reply });
       } catch (error) {
         console.error('[Chat GPT Quickly] Widget request failed', error);
         this.addAssistantMessage(`Gemini: ${error.message}`);
       } finally {
         this.setSending(false);
       }
+    }
+
+    streamReply(apiKey) {
+      return new Promise((resolve, reject) => {
+        const port = chrome.runtime.connect({ name: 'gemini-chat' });
+        const assistantMessage = this.addAssistantMessage('');
+        let reply = '';
+
+        port.onMessage.addListener((message) => {
+          if (message.type === 'chunk') {
+            reply += message.text;
+            assistantMessage.textContent = reply;
+            this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+          }
+          if (message.type === 'done') resolve(reply);
+          if (message.type === 'error') reject(new Error(message.error));
+        });
+        port.onDisconnect.addListener(() => {
+          if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+        });
+        port.postMessage({ type: 'chat', apiKey, messages: this.conversation });
+      });
     }
 
     async getApiKey() {
@@ -147,6 +162,7 @@
       assistantMessage.textContent = text;
       this.elements.messages.appendChild(assistantMessage);
       this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+      return assistantMessage;
     }
 
     setSending(isSending) {
