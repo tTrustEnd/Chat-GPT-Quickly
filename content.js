@@ -8,6 +8,18 @@
   document.documentElement.appendChild(host);
 
   const shadowRoot = host.attachShadow({ mode: 'closed' });
+  const widget = new window.ChatGPTQuicklyWidget(shadowRoot);
+  widget.mount();
+})();(function () {
+  if (window.top !== window.self || document.getElementById('chat-gpt-quickly-host')) {
+    return;
+  }
+
+  const host = document.createElement('div');
+  host.id = 'chat-gpt-quickly-host';
+  document.documentElement.appendChild(host);
+
+  const shadowRoot = host.attachShadow({ mode: 'closed' });
   shadowRoot.innerHTML = `
     <style>
       :host { all: initial; }

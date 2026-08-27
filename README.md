@@ -2,6 +2,8 @@
 
 Extension Chrome/Edge hien thi khung chat noi tren moi trang web.
 
+Ma nguon duoc tach thanh `content.js` (bootstrap), `chat-widget.js` (logic widget) va `chat-widget.css` (giao dien). Icon dung file `extension_icon.png`.
+
 ## Cai dat local
 
 1. Mo `chrome://extensions` (hoac `edge://extensions`).
