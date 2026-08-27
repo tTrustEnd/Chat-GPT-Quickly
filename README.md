@@ -4,16 +4,16 @@ Extension Chrome/Edge hien thi khung chat noi tren moi trang web.
 
 Ma nguon duoc tach thanh `content.js` (bootstrap), `chat-widget.js` (logic widget) va `chat-widget.css` (giao dien). Icon dung file `extension_icon.png`.
 
-## Ket noi GPT that
+## Ket noi Gemini that
 
-Extension goi truc tiep OpenAI Responses API (`/v1/responses`) thong qua `background.js`, khong can localhost.
+Extension goi truc tiep Gemini API (`generateContent`) thong qua `background.js`, khong can localhost.
 
-1. Tao API key tai https://platform.openai.com/api-keys.
+1. Tao Gemini API key tai https://aistudio.google.com/apikey.
 2. Mo extension tren mot trang web va gui tin nhan dau tien.
 3. Nhap API key khi extension yeu cau. Key duoc luu trong `chrome.storage.local` tren may nay.
 4. Reload extension sau khi cap nhat code.
 
-API key co quyen truy cap GPT, khong chia se key va khong commit key vao repository.
+API key co quyen truy cap Gemini, khong chia se key va khong commit key vao repository.
 
 ## Cai dat local
 

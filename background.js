@@ -2,7 +2,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('[Chat GPT Quickly] Background received message', message.type);
   if (message.type !== 'chat') return;
 
-  requestResponsesApi(message.apiKey, message.messages)
+  requestGeminiApi(message.apiKey, message.messages)
     .then((reply) => {
       console.log('[Chat GPT Quickly] Sending reply to widget');
       sendResponse({ ok: true, reply });
@@ -15,16 +15,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
-async function requestResponsesApi(apiKey, messages) {
-  console.log('[Chat GPT Quickly] Calling OpenAI Responses API', {
+async function requestGeminiApi(apiKey, messages) {
+  const model = 'gemini-2.5-flash';
+  console.log('[Chat GPT Quickly] Calling Gemini API', {
     messageCount: messages.length,
-    model: 'gpt-5'
+    model
   });
 
-  const response = await fetch('https://api.openai.com/v1/responses', {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const contents = messages.map((message) => ({
+    role: message.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: message.content }]
+  }));
+  const response = await fetch(endpoint, {
     body: JSON.stringify({
-      model: 'gpt-5',
-      input: messages
+      contents,
+      generationConfig: { temperature: 0.7 }
     }),
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -33,16 +39,15 @@ async function requestResponsesApi(apiKey, messages) {
     method: 'POST'
   });
   const data = await response.json();
-  console.log('[Chat GPT Quickly] OpenAI response', response.status, data);
+  console.log('[Chat GPT Quickly] Gemini response', response.status, data);
   if (!response.ok) {
-    const error = new Error(data.error?.message || 'OpenAI API request failed.');
-    error.code = data.error?.code || 'openai_api_error';
+    const error = new Error(data.error?.message || 'Gemini API request failed.');
+    error.code = data.error?.status || 'gemini_api_error';
     throw error;
   }
-  const reply = data.output
-    ?.flatMap((item) => item.content || [])
-    .filter((item) => item.type === 'output_text')
-    .map((item) => item.text)
+  const reply = data.candidates
+    ?.flatMap((candidate) => candidate.content?.parts || [])
+    .map((part) => part.text || '')
     .join('\n');
-  return reply || 'GPT khong tra ve noi dung.';
+  return reply || 'Gemini khong tra ve noi dung.';
 }

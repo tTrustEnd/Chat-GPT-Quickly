@@ -124,20 +124,20 @@
         this.addAssistantMessage(result.reply);
       } catch (error) {
         console.error('[Chat GPT Quickly] Widget request failed', error);
-        this.addAssistantMessage(`OpenAI: ${error.message}`);
+        this.addAssistantMessage(`Gemini: ${error.message}`);
       } finally {
         this.setSending(false);
       }
     }
 
     async getApiKey() {
-      const stored = await chrome.storage.local.get('openaiApiKey');
-      if (stored.openaiApiKey) return stored.openaiApiKey;
+      const stored = await chrome.storage.local.get('geminiApiKey');
+      if (stored.geminiApiKey) return stored.geminiApiKey;
 
-      const apiKey = window.prompt('Nhap OpenAI API key (bat dau bang sk-):');
+      const apiKey = window.prompt('Nhap Gemini API key:');
       if (!apiKey || !apiKey.trim()) return '';
       const trimmedKey = apiKey.trim();
-      await chrome.storage.local.set({ openaiApiKey: trimmedKey });
+      await chrome.storage.local.set({ geminiApiKey: trimmedKey });
       return trimmedKey;
     }
 
