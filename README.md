@@ -4,6 +4,17 @@ Extension Chrome/Edge hien thi khung chat noi tren moi trang web.
 
 Ma nguon duoc tach thanh `content.js` (bootstrap), `chat-widget.js` (logic widget) va `chat-widget.css` (giao dien). Icon dung file `extension_icon.png`.
 
+## Ket noi GPT that
+
+Extension goi truc tiep OpenAI API thong qua `background.js`, khong can localhost.
+
+1. Tao API key tai https://platform.openai.com/api-keys.
+2. Mo extension tren mot trang web va gui tin nhan dau tien.
+3. Nhap API key khi extension yeu cau. Key duoc luu trong `chrome.storage.local` tren may nay.
+4. Reload extension sau khi cap nhat code.
+
+API key co quyen truy cap GPT, khong chia se key va khong commit key vao repository.
+
 ## Cai dat local
 
 1. Mo `chrome://extensions` (hoac `edge://extensions`).

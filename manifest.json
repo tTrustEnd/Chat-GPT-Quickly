@@ -3,7 +3,8 @@
   "name": "Chat GPT Quickly",
   "version": "1.0.0",
   "description": "Mo khung chat AI nhanh tren moi trang web.",
-  "permissions": [],
+  "permissions": ["storage"],
+  "host_permissions": ["https://api.openai.com/*"],
   "web_accessible_resources": [
     {
       "resources": ["chat-widget.css", "extension_icon.png"],
@@ -17,6 +18,9 @@
       "run_at": "document_idle"
     }
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_title": "Chat GPT Quickly",
     "default_icon": {

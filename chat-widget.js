@@ -24,7 +24,7 @@
             <textarea rows="1" aria-label="Noi dung tin nhan" placeholder="Nhan tin cho Chat GPT..." required></textarea>
             <button class="send" type="submit" aria-label="Gui tin nhan" title="Gui tin nhan">&#8593;</button>
           </div>
-          <div class="composer-footer"><span>Enter de gui</span><span>Chat GPT Quickly</span></div>
+          <div class="composer-footer"><span class="composer-status">Enter de gui</span><span>Chat GPT Quickly</span></div>
         </form>
       </section>
     </div>
@@ -34,6 +34,8 @@
     constructor(shadowRoot) {
       this.shadowRoot = shadowRoot;
       this.elements = {};
+      this.conversation = [];
+      this.isSending = false;
     }
 
     mount() {
@@ -57,6 +59,7 @@
       this.elements.form = this.shadowRoot.querySelector('.composer');
       this.elements.textarea = this.shadowRoot.querySelector('textarea');
       this.elements.messages = this.shadowRoot.querySelector('.messages');
+      this.elements.status = this.shadowRoot.querySelector('.composer-status');
     }
 
     bindEvents() {
@@ -90,18 +93,63 @@
       }
     }
 
-    sendMessage(event) {
+    async sendMessage(event) {
       event.preventDefault();
       const text = this.elements.textarea.value.trim();
-      if (!text) return;
+      if (!text || this.isSending) return;
+
+      const apiKey = await this.getApiKey();
+      if (!apiKey) return;
 
       const userMessage = document.createElement('div');
       userMessage.className = 'message user';
       userMessage.textContent = text;
       this.elements.messages.appendChild(userMessage);
+      this.conversation.push({ role: 'user', content: text });
       this.elements.textarea.value = '';
       this.resizeTextarea();
       this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+      this.setSending(true);
+
+      try {
+        const result = await chrome.runtime.sendMessage({
+          type: 'chat',
+          apiKey,
+          messages: this.conversation
+        });
+        if (!result.ok) throw new Error(result.error);
+        this.conversation.push({ role: 'assistant', content: result.reply });
+        this.addAssistantMessage(result.reply);
+      } catch (error) {
+        this.addAssistantMessage(`Loi ket noi: ${error.message}`);
+      } finally {
+        this.setSending(false);
+      }
+    }
+
+    async getApiKey() {
+      const stored = await chrome.storage.local.get('openaiApiKey');
+      if (stored.openaiApiKey) return stored.openaiApiKey;
+
+      const apiKey = window.prompt('Nhap OpenAI API key (bat dau bang sk-):');
+      if (!apiKey || !apiKey.trim()) return '';
+      const trimmedKey = apiKey.trim();
+      await chrome.storage.local.set({ openaiApiKey: trimmedKey });
+      return trimmedKey;
+    }
+
+    addAssistantMessage(text) {
+      const assistantMessage = document.createElement('div');
+      assistantMessage.className = 'message assistant';
+      assistantMessage.textContent = text;
+      this.elements.messages.appendChild(assistantMessage);
+      this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
+    }
+
+    setSending(isSending) {
+      this.isSending = isSending;
+      this.elements.textarea.disabled = isSending;
+      this.elements.status.textContent = isSending ? 'GPT dang tra loi...' : 'Enter de gui';
     }
   }
 

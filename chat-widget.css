@@ -31,6 +31,7 @@
 .composer-row:focus-within { border-color: #10a37f; box-shadow: 0 0 0 2px rgba(16, 163, 127, .12); }
 textarea { background: transparent; border: 0; color: #202123; flex: 1; font: inherit; line-height: 1.45; min-height: 30px; max-height: 110px; outline: 0; overflow-y: auto; padding: 6px 0; resize: none; }
 textarea::placeholder { color: #acacbe; }
+textarea:disabled { cursor: wait; opacity: .65; }
 .send { align-items: center; background: #10a37f; border: 0; border-radius: 8px; color: #fff; cursor: pointer; display: flex; font-size: 22px; font-weight: 600; height: 34px; justify-content: center; line-height: 1; padding: 0 7px 4px; transition: background .2s ease, transform .2s ease; width: 34px; }
 .send:hover { background: #0d8c6d; transform: translateY(-1px); }
 .composer-footer { color: #acacbe; display: flex; font-size: 10px; justify-content: space-between; padding: 8px 3px 0; }
