@@ -121,7 +121,7 @@
         this.conversation.push({ role: 'assistant', content: result.reply });
         this.addAssistantMessage(result.reply);
       } catch (error) {
-        this.addAssistantMessage(`Loi ket noi: ${error.message}`);
+        this.addAssistantMessage(`OpenAI: ${error.message}`);
       } finally {
         this.setSending(false);
       }

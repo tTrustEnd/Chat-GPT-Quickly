@@ -9,6 +9,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function requestChatCompletion(apiKey, messages) {
+  console.info('[Chat GPT Quickly] Calling OpenAI API', {
+    messageCount: messages.length,
+    model: 'gpt-4o-mini'
+  });
+
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     body: JSON.stringify({
       model: 'gpt-4o-mini',
@@ -22,8 +27,11 @@ async function requestChatCompletion(apiKey, messages) {
     method: 'POST'
   });
   const data = await response.json();
+  console.info('[Chat GPT Quickly] OpenAI response', response.status);
   if (!response.ok) {
-    throw new Error(data.error?.message || 'OpenAI API request failed.');
+    const error = new Error(data.error?.message || 'OpenAI API request failed.');
+    error.code = data.error?.code || 'openai_api_error';
+    throw error;
   }
   return data.choices?.[0]?.message?.content || 'GPT khong tra ve noi dung.';
 }
