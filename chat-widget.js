@@ -110,6 +110,7 @@
       this.resizeTextarea();
       this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
       this.setSending(true);
+      console.log('[Chat GPT Quickly] Sending message', { messageCount: this.conversation.length });
 
       try {
         const result = await chrome.runtime.sendMessage({
@@ -117,10 +118,12 @@
           apiKey,
           messages: this.conversation
         });
+        console.log('[Chat GPT Quickly] Background response', result);
         if (!result.ok) throw new Error(result.error);
         this.conversation.push({ role: 'assistant', content: result.reply });
         this.addAssistantMessage(result.reply);
       } catch (error) {
+        console.error('[Chat GPT Quickly] Widget request failed', error);
         this.addAssistantMessage(`OpenAI: ${error.message}`);
       } finally {
         this.setSending(false);

@@ -1,15 +1,22 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('[Chat GPT Quickly] Background received message', message.type);
   if (message.type !== 'chat') return;
 
-  requestChatCompletion(message.apiKey, message.messages)
-    .then((reply) => sendResponse({ ok: true, reply }))
-    .catch((error) => sendResponse({ ok: false, error: error.message }));
+  requestResponsesApi(message.apiKey, message.messages)
+    .then((reply) => {
+      console.log('[Chat GPT Quickly] Sending reply to widget');
+      sendResponse({ ok: true, reply });
+    })
+    .catch((error) => {
+      console.error('[Chat GPT Quickly] Request failed', error);
+      sendResponse({ ok: false, error: error.message });
+    });
 
   return true;
 });
 
-async function requestChatCompletion(apiKey, messages) {
-  console.info('[Chat GPT Quickly] Calling OpenAI API', {
+async function requestResponsesApi(apiKey, messages) {
+  console.log('[Chat GPT Quickly] Calling OpenAI Responses API', {
     messageCount: messages.length,
     model: 'gpt-5'
   });
@@ -26,7 +33,7 @@ async function requestChatCompletion(apiKey, messages) {
     method: 'POST'
   });
   const data = await response.json();
-  console.info('[Chat GPT Quickly] OpenAI response', response.status);
+  console.log('[Chat GPT Quickly] OpenAI response', response.status, data);
   if (!response.ok) {
     const error = new Error(data.error?.message || 'OpenAI API request failed.');
     error.code = data.error?.code || 'openai_api_error';
