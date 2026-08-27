@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function requestGeminiApi(apiKey, messages) {
-  const model = 'gemini-2.5-flash';
+  const model = 'gemini-3.6-flash';
   console.log('[Chat GPT Quickly] Calling Gemini API', {
     messageCount: messages.length,
     model

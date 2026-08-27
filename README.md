@@ -6,7 +6,7 @@ Ma nguon duoc tach thanh `content.js` (bootstrap), `chat-widget.js` (logic widge
 
 ## Ket noi Gemini that
 
-Extension goi truc tiep Gemini API (`generateContent`) thong qua `background.js`, khong can localhost.
+Extension goi truc tiep Gemini API (`generateContent`) voi model `gemini-3.6-flash` thong qua `background.js`, khong can localhost.
 
 1. Tao Gemini API key tai https://aistudio.google.com/apikey (khong dung OAuth token hoac key Vertex AI).
 2. Mo extension tren mot trang web va gui tin nhan dau tien.
