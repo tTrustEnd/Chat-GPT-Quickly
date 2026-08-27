@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Chat GPT Quickly",
+  "version": "1.0.0",
+  "description": "Mo khung chat AI nhanh tren moi trang web.",
+  "permissions": [],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Chat GPT Quickly"
+  }
+}
