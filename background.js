@@ -11,14 +11,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 async function requestChatCompletion(apiKey, messages) {
   console.info('[Chat GPT Quickly] Calling OpenAI API', {
     messageCount: messages.length,
-    model: 'gpt-4o-mini'
+    model: 'gpt-5'
   });
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  const response = await fetch('https://api.openai.com/v1/responses', {
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages,
-      temperature: 0.7
+      model: 'gpt-5',
+      input: messages
     }),
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -33,5 +32,10 @@ async function requestChatCompletion(apiKey, messages) {
     error.code = data.error?.code || 'openai_api_error';
     throw error;
   }
-  return data.choices?.[0]?.message?.content || 'GPT khong tra ve noi dung.';
+  const reply = data.output
+    ?.flatMap((item) => item.content || [])
+    .filter((item) => item.type === 'output_text')
+    .map((item) => item.text)
+    .join('\n');
+  return reply || 'GPT khong tra ve noi dung.';
 }

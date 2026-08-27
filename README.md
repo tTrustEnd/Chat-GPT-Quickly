@@ -6,7 +6,7 @@ Ma nguon duoc tach thanh `content.js` (bootstrap), `chat-widget.js` (logic widge
 
 ## Ket noi GPT that
 
-Extension goi truc tiep OpenAI API thong qua `background.js`, khong can localhost.
+Extension goi truc tiep OpenAI Responses API (`/v1/responses`) thong qua `background.js`, khong can localhost.
 
 1. Tao API key tai https://platform.openai.com/api-keys.
 2. Mo extension tren mot trang web va gui tin nhan dau tien.
